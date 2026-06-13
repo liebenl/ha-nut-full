@@ -1,0 +1,17 @@
+name: Mirror to GitHub
+on:
+  push:
+    branches: [main]
+jobs:
+  mirror:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push to GitHub mirror
+        env:
+          GH_MIRROR_TOKEN: ${{ secrets.GH_MIRROR_TOKEN }}
+        run: |
+          git config --local credential.helper '!f() { echo "username=liebenl"; echo "password=$GH_MIRROR_TOKEN"; }; f'
+          git push https://github.com/liebenl/ha-nut-full.git HEAD:main
