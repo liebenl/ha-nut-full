@@ -7,7 +7,6 @@ import re
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
-    SensorEntityDescription,
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
@@ -120,7 +119,7 @@ class NutFullSensor(CoordinatorEntity, SensorEntity):
 
         # Friendly name: replace dots and underscores with spaces, title-case
         readable = nut_var.replace(".", " ").replace("_", " ").title()
-        self._attr_name = f"{readable}"
+        self._attr_name = readable
 
         # Pull metadata from our map (exact match first, then None)
         meta = VARIABLE_META.get(nut_var, {})

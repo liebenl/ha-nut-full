@@ -49,29 +49,36 @@ class NutClient:
         self._sock.settimeout(self.timeout)
         self._buf = b""
 
-        # Authenticate — send both in one write to avoid round-trip delays
-        if self.username and self.password:
-            self._sock.sendall(
-                f"USERNAME {self.username}\nPASSWORD {self.password}\n".encode()
-            )
-            # Consume the two OK responses
-            ok1 = self._readline()
-            ok2 = self._readline()
-            _LOGGER.debug("NUT auth responses: %r %r", ok1, ok2)
-            if ok1.startswith(NUT_ERR):
-                raise NutError(f"USERNAME rejected: {ok1}")
-            if ok2.startswith(NUT_ERR):
-                raise NutError(f"PASSWORD rejected: {ok2}")
-        elif self.username:
-            self._sock.sendall(f"USERNAME {self.username}\n".encode())
-            ok = self._readline()
-            if ok.startswith(NUT_ERR):
-                raise NutError(f"USERNAME rejected: {ok}")
-        elif self.password:
-            self._sock.sendall(f"PASSWORD {self.password}\n".encode())
-            ok = self._readline()
-            if ok.startswith(NUT_ERR):
-                raise NutError(f"PASSWORD rejected: {ok}")
+        try:
+            # Authenticate — send both in one write to avoid round-trip delays
+            if self.username and self.password:
+                self._sock.sendall(
+                    f"USERNAME {self.username}\nPASSWORD {self.password}\n".encode()
+                )
+                # Consume the two OK responses
+                ok1 = self._readline()
+                ok2 = self._readline()
+                _LOGGER.debug("NUT auth responses: %r %r", ok1, ok2)
+                if ok1.startswith(NUT_ERR):
+                    raise NutError(f"USERNAME rejected: {ok1}")
+                if ok2.startswith(NUT_ERR):
+                    raise NutError(f"PASSWORD rejected: {ok2}")
+            elif self.username:
+                self._sock.sendall(f"USERNAME {self.username}\n".encode())
+                ok = self._readline()
+                if ok.startswith(NUT_ERR):
+                    raise NutError(f"USERNAME rejected: {ok}")
+            elif self.password:
+                self._sock.sendall(f"PASSWORD {self.password}\n".encode())
+                ok = self._readline()
+                if ok.startswith(NUT_ERR):
+                    raise NutError(f"PASSWORD rejected: {ok}")
+        except Exception:
+            # connect() raised after the socket was opened — close it so we
+            # don't leak the fd (the context manager's __exit__ is never
+            # reached if __enter__ raises).
+            self.disconnect()
+            raise
 
     def disconnect(self) -> None:
         """Close the connection gracefully."""
