@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Network UPS Tool (NUT) - Full — Connect to NUT Server",
+        "description": "Enter your NUT server details. All UPS variables will be exposed as sensors.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "username": "Username (optional)",
+          "password": "Password (optional)",
+          "scan_interval": "Poll interval (seconds)"
+        }
+      },
+      "ups": {
+        "title": "Select UPS",
+        "description": "Multiple UPS devices were found. Select the one to monitor.",
+        "data": {
+          "ups_name": "UPS name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to NUT server. Check host, port, and credentials.",
+      "no_ups_found": "Connected but no UPS devices were found on this server."
+    },
+    "abort": {
+      "already_configured": "This UPS is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Network UPS Tool (NUT) - Full — Options",
+        "data": {
+          "scan_interval": "Poll interval (seconds)"
+        }
+      }
+    }
+  }
+}
